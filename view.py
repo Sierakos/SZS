@@ -1,19 +1,7 @@
-from model import Student
+from model import Student, Course
 from controller import Controller
 
-s = Student()
 ctr = Controller()
-
-# print('---------START PROGRAMU------------')
-# s.setFname(input("Wpisz imie: "))
-# s.setLname(input("Wpisza nazwisko: "))
-# s.setAge(input("Wpisz wiek: "))
-# s.setPhone(input("Wpisz nr. telefonu (opcjonalne): "))
-# s.setEmail(input("Wpisz email (opcjonalne): "))
-# ctr.Form(s)
-# print(s.getMessage())
-
-# ctr.getStudents()
 
 while True:
     print("-"*50)
@@ -27,6 +15,10 @@ while True:
     print("7. Dodaj przedmiot")
     print("8. Wypisz przedmioty")
     print("9. Usuń przedmiot")
+    print("10. Dodaj egzamin")
+    print("11. Usuń egzamin")
+    print("12. Wyświetl egzaminy")
+    print("13. Pokaż wykres studenta")
     print("q. Wyjdź")
     print("-"*50)
     x = input("Podaj opcje: ")
@@ -34,12 +26,13 @@ while True:
     # Kod poniżej wymaga małej modyfikacji ale działa
     # Wymyślić sposób na zmienienie typów zmiennych
     if x == "1":
+        s = Student()
         s.setFname(input("Wpisz imie studenta, którego chcesz utworzyć: "))
         s.setLname(input("Wpisz nazwisko studenta, którego chcesz utworzyć: "))
         s.setAge(input("Wpisz wiek studenta, którego chcesz utworzyć: "))
         s.setPhone(input("Wpisz numer telefonu ucznia, którego chcesz utworzyć: "))
         s.setEmail(input("Wpisz e-mail ucznia, którego chcesz utworzyć: "))
-        if ctr.Form(s) == True:
+        if ctr.studentForm(s) == True:
             fname = str(s.getFname())
             lname = str(s.getLname())
             age = int(s.getAge())
@@ -52,10 +45,6 @@ while True:
         ctr.delete_student_from_db()
     elif x == "3":
         ctr.print_info_about_students()
-
-
-    # Poniższe opcje jeszcze nie działają
-    # Trzeba dodać validacje
     elif x == "4":
         kierunek = input("Wpisz nazwę nowego kierunku: ")
         ctr.add_grade_course_to_db(kierunek)
@@ -65,9 +54,13 @@ while True:
         id = input("Wbierz id kierunku, którego chcesz usunąć: ")
         ctr.delete_grade_course(id)
     elif x == "7":
-        g_c_id = input("Podaj id kierunku dla którego chcesz dodać przedmiot: ")
-        przedmiot = input("Podaj nazwe przedmiotu: ")
-        ctr.add_course_to_db(przedmiot, g_c_id)
+        course = Course()
+        course.setGradeCourseId(input("Podaj id kierunku dla którego chcesz dodać przedmiot: "))
+        course.setName(input("Podaj nazwe przedmiotu: "))
+        if ctr.courseForm(course) == True:
+            ctr.add_course_to_db(course.getName(), course.getGradeCourseId())
+        else:
+            print("Niepoprawne dane")
     elif x == "8":
         ctr.print_courses()
     elif x == "9":

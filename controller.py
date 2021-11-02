@@ -10,7 +10,7 @@ class Controller():
         self.__curr = self.__connection.cursor()
 
     ### kod w funkcji poniżej tymczasowy
-    def Form(self, student):
+    def studentForm(self, student):
         if self.__isvalidForm(student):
             if self.__isvalidEmail(student):
                 if self.__isvalidAge(student):
@@ -34,7 +34,21 @@ class Controller():
             student.setMessage("Wpisz imie, nazwisko i wiek")
             return False
 
-    # validacje - Sprawdza czy podczas dodawania studenta wprowadzamy poprawne dane
+    def courseForm(self, course):
+        if self.__isvalidG_courseId(course):
+            course.setMessage("Dane poprawne")
+            return True
+        else:
+            course.setMessage("Coś nie halo")
+            return False
+
+    def g_courseForm(self, g_course):
+        pass
+
+    def examForm(self, exam):
+        pass
+
+    # validacje dla studenta
     def __isvalidForm(self, student):
         if student.getFname() != "" and student.getLname() != "" and student.getAge != 0: 
             return True
@@ -71,12 +85,14 @@ class Controller():
 
     def __valid(self, student):
         student.setMessage("Dane poprawne")
-        # return True
 
-    # def getStudents(self):
-    #     students = self.__curr.execute("SELECT * FROM student")
-    #     for student in students:
-    #         print(student)
+    # validacje dla przedmiotu
+    def __isvalidG_courseId(self, course):
+        query = self.__curr.execute("SELECT * FROM grade_course WHERE id = ?", (course.getGradeCourseId(), ))
+        item = self.__curr.fetchall()
+        print(f"id kierunku z zapytania bazy danych: {item}")
+        print(f"id kierunku z formularza: {course.getGradeCourseId()}")
+        return True
 
     ### Zapytania dla studenta ###    
     def add_student_to_db(self, student, first_name, last_name, age=0, phone="", email=''):
@@ -125,7 +141,7 @@ class Controller():
     def print_courses(self):
         self.__curr.execute("SELECT * FROM course")
         items = self.__curr.fetchall()
-        print('Studenci')
+        print('Przedmioty')
         print('-'*50)
         for item in items:
             print(item)

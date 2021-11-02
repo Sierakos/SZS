@@ -57,13 +57,20 @@ class GradeCourse():
     def setName(self, par):
         self.__name = par
 
+    def setMessage(self, par):
+        self.__message = par
+
     # getters
     def getName(self):
         return self.__name
 
+    def getMessage(self):
+        return self.__message
+
 class Course():
     __name = ""
     __grade_course_id = 0
+    abc = 3
 
 
     def __init__(self):
@@ -76,12 +83,18 @@ class Course():
     def setGradeCourseId(self, par):
         self.__grade_course_id = par
 
+    def setMessage(self, par):
+        self.__message = par
+
     # getters
     def getName(self):
         return self.__name
 
     def getGradeCourseId(self):
         return self.__grade_course_id
+
+    def getMessage(self):
+        return self.__message
 
 class Exam():
     __name = ""
@@ -106,6 +119,9 @@ class Exam():
     def setCourseId(self, par):
         self.__course_id = par
 
+    def setMessage(self, par):
+        self.__message = par
+
     # getters
     def getName(self):
         return self.__name
@@ -118,3 +134,6 @@ class Exam():
 
     def getCourseId(self):
         return self.__course_id
+
+    def getMessage(self):
+        return self.__message
