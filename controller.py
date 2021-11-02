@@ -13,15 +13,18 @@ class Controller():
     def Form(self, student):
         if self.__isvalidForm(student):
             if self.__isvalidEmail(student):
-                # To na pewno wymaga modyfikacji
-                try:
-                    student.setAge(int(student.getAge()))
+                if self.__isvalidAge(student):
                     if student.getAge() > 0:
-                        self.__valid(student)
-                        return True
+                        if self.__isvalidPhone(student):
+                            self.__valid(student)
+                            return True
+                        else:
+                            student.setMessage("Numer telefonu musi być tylko liczbą")
+                            return False
                     else:
                         student.setMessage("Wiek musi być większy od zera")
-                except:
+                        return False
+                else:
                     student.setMessage("Wiek musi być liczbą całkowitą")  
                     return False
             else:
@@ -44,6 +47,24 @@ class Controller():
             return True
         else:
             if (re.fullmatch(regex, student.getEmail())):
+                return True
+            else:
+                return False
+
+    def __isvalidAge(self, student):
+        numbers_only = r'[0-9]+'
+        if (re.fullmatch(numbers_only, student.getAge())):
+            student.setAge(int(student.getAge())) 
+            return True
+        else:
+            return False
+
+    def __isvalidPhone(self, student):
+        numbers_only = r'[0-9]+'
+        if student.getPhone() == "":
+            return True
+        else:
+            if (re.fullmatch(numbers_only, student.getPhone())):
                 return True
             else:
                 return False

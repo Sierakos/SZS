@@ -39,8 +39,6 @@ while True:
         s.setAge(input("Wpisz wiek studenta, którego chcesz utworzyć: "))
         s.setPhone(input("Wpisz numer telefonu ucznia, którego chcesz utworzyć: "))
         s.setEmail(input("Wpisz e-mail ucznia, którego chcesz utworzyć: "))
-        ctr.Form(s)
-        print(s.getMessage())
         if ctr.Form(s) == True:
             fname = str(s.getFname())
             lname = str(s.getLname())
@@ -49,7 +47,7 @@ while True:
             email = str(s.getEmail())
             ctr.add_student_to_db(s, fname, lname, age, phone, email)
         else:
-            pass
+            print(s.getMessage())
     elif x == "2":
         ctr.delete_student_from_db()
     elif x == "3":

@@ -1,6 +1,3 @@
-### W BAZIE DANYCH 'student' ZMIENIĆ TYP KOLUMNY 'phone' Z VARCHAR na INT ###
-#############################################################################
-
 class Student():
     __first_name = ""
     __last_name = ""
