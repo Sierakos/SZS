@@ -1,6 +1,6 @@
 from db_connect import Sqlite
 import re
-
+# ctr
 class Controller():
     __connection=None
     __curr=None
