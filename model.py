@@ -70,7 +70,6 @@ class GradeCourse():
 class Course():
     __name = ""
     __grade_course_id = 0
-    abc = 3
 
 
     def __init__(self):
@@ -98,23 +97,15 @@ class Course():
 
 class Exam():
     __name = ""
-    __grade = 0
-    __student_id = 0
     __course_id = 0
 
 
     def __init__(self):
-        print("Dodano objekt przedmiotu")
+        print("Dodano objekt egzaminu")
 
     # setters
     def setName(self, par):
         self.__name = par
-
-    def setGrade(self, par):
-        self.__grade = par
-
-    def setStudentId(self, par):
-        self.__student_id = par
 
     def setCourseId(self, par):
         self.__course_id = par
@@ -126,14 +117,44 @@ class Exam():
     def getName(self):
         return self.__name
 
-    def getGrade(self):
-        return self.__grade
-
-    def getStudentId(self):
-        return self.__student_id
-
     def getCourseId(self):
         return self.__course_id
 
     def getMessage(self):
         return self.__message
+
+class ExamForStudent():
+    __student_id = 0
+    __exam_id = 0
+    __grade = 0
+
+    def __init__(self):
+        print("Utworzono obiekt egzaminu dla studentow")
+
+    # setters
+    def setStudentId(self, par):
+        self.__student_id = par
+
+    def setExamId(self, par):
+        self.__exam_id = par
+
+    def setGrade(self, par):
+        self.__grade = par
+
+    def setMessage(self, par):
+        self.__message = par
+
+    # getters
+    def getStudentId(self):
+        return self.__student_id
+
+    def getExamId(self):
+        return self.__exam_id
+
+    def setGrade(self):
+        return self.__grade
+
+    def getMessage(self):
+        return self.__message
+
+    

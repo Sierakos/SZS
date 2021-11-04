@@ -1,5 +1,6 @@
-from model import Student, Course
+from model import Student, Course, Exam, GradeCourse
 from controller import Controller
+import pandas as pd
 
 ctr = Controller()
 
@@ -16,9 +17,10 @@ while True:
     print("8. Wypisz przedmioty")
     print("9. Usuń przedmiot")
     print("10. Dodaj egzamin")
-    print("11. Usuń egzamin")
-    print("12. Wyświetl egzaminy")
-    print("13. Pokaż wykres studenta")
+    print("11. Wyświetl egzaminy")
+    print("12. Usuń egzamin")
+    print("13. Pokaz oceny z egzaminow")
+    print("14. Pokaż wykres studenta")
     print("q. Wyjdź")
     print("-"*50)
     x = input("Podaj opcje: ")
@@ -59,13 +61,30 @@ while True:
         course.setName(input("Podaj nazwe przedmiotu: "))
         if ctr.courseForm(course) == True:
             ctr.add_course_to_db(course.getName(), course.getGradeCourseId())
+            print(course.getMessage())
         else:
-            print("Niepoprawne dane")
+            print(course.getMessage())
     elif x == "8":
         ctr.print_courses()
     elif x == "9":
-        id = input("Wbierz id przedmiotu, którego chcesz usunąć: ")
+        id = input("Wbierz id przedmiotu, który chcesz usunąć: ")
         ctr.delete_course(id)
+    elif x == "10":
+        exam = Exam()
+        exam.setCourseId(input("Podaj id przedmiotu dla którego chcesz stworzyć egzamin: "))
+        exam.setName(input("Podaj nazwe egzaminu: "))
+        if ctr.examForm(exam) == True:
+            ctr.add_exam_to_db(exam.getName(), exam.getCourseId())
+            print(exam.getMessage())
+        else:
+            print(exam.getMessage())
+    elif x == "11":
+        ctr.print_exams()
+    elif x == "12":
+        id = input("wybierz id egzaminu, który chcesz usunąć: ")
+        ctr.delete_exam(id)
+    elif x == "13":
+        ctr.print_exam_for_student()
     elif x == "q":
         break
 
