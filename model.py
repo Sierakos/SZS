@@ -136,7 +136,7 @@ class ExamForStudent():
     __grade = 0
 
     def __init__(self):
-        print("Utworzono obiekt egzaminu dla studentow")
+        print("Utworzono objekt egzaminu dla studentow")
 
     # setters
     def setStudentId(self, par):

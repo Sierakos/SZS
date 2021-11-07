@@ -33,8 +33,6 @@ class View():
             print("-"*50)
             x = input("Podaj opcje: ")
 
-            # Kod poniżej wymaga małej modyfikacji ale działa
-            # Wymyślić sposób na zmienienie typów zmiennych
             if x == "1":
                 s = Student()
                 s.setFname(input("Wpisz imie studenta, którego chcesz utworzyć: "))

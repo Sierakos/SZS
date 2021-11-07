@@ -117,7 +117,8 @@ class Controller():
     def add_student_to_db(self, student, first_name, last_name, age=0, phone="", email=''):
         if student.getMessage() == "Dane poprawne":
             print("DODAWANIE DO BAZY")
-            self.__curr.execute("INSERT INTO student(first_name, last_name, age, phone, email) VALUES (?,?,?,?,?)", (first_name, last_name, age, phone, email))
+            self.__curr.execute("INSERT INTO student(first_name, last_name, age, phone, email) VALUES (?,?,?,?,?)",
+            (first_name, last_name, age, phone, email))
             Sqlite.commit(self, self.__connection)
         else:
             print("NIE DODAWANIE DO BAZY")
@@ -128,7 +129,9 @@ class Controller():
         Sqlite.commit(self, self.__connection)
 
     def print_info_about_active_students(self):
-        self.__curr.execute("SELECT s.id, s.first_name, s.last_name, s.age, s.phone, s.email, gc.name FROM student as s INNER JOIN grade_course as gc ON gc.id = s.grade_course_id")
+        self.__curr.execute('''SELECT s.id, s.first_name, s.last_name, s.age, s.phone, s.email, gc.name 
+                            FROM student as s 
+                            INNER JOIN grade_course as gc ON gc.id = s.grade_course_id''')
         items = self.__curr.fetchall()
         print('Aktywni studenci')
         print('-'*50)
@@ -193,16 +196,6 @@ class Controller():
             print(df)
         else:
             print("Nie ma zadnych Przedmiotów w bazie")
-        # for item in items:
-        #     print(item)
-
-    # def print_courses(self):
-    #     self.c.execute("SELECT grade_course.name, course.name FROM grade_course INNER JOIN course ON grade_course.id = course.grade_course_id")
-    #     items = self.c.fetchall()
-    #     print('Przedmioty')
-    #     print('-'*50)
-    #     for item in items:
-    #         print(item)
 
     def delete_course(self, id):
         self.__curr.execute("DELETE FROM course WHERE id = ?", (id, ))
@@ -219,9 +212,14 @@ class Controller():
         egz = self.__curr.execute("SELECT * FROM exam WHERE name = ?", (exam, ))
         id_egzaminu = egz.fetchall()[-1][0]
 
-        id_kierunkow = self.__curr.execute("SELECT grade_course.id FROM exam INNER JOIN course ON course.id = exam.course_id INNER JOIN grade_course ON course.grade_course_id = grade_course.id WHERE exam.name = ?", (exam, ))
+        id_kierunkow = self.__curr.execute('''SELECT grade_course.id FROM exam 
+                                           INNER JOIN course ON course.id = exam.course_id 
+                                           INNER JOIN grade_course ON course.grade_course_id = grade_course.id 
+                                           WHERE exam.name = ?''', (exam, ))
         id_kierunku = id_kierunkow.fetchall()[0][0]
-        studenci = self.__curr.execute("SELECT * FROM student INNER JOIN grade_course ON student.grade_course_id = grade_course.id WHERE grade_course.id = ?", (id_kierunku, ))
+        studenci = self.__curr.execute('''SELECT * FROM student 
+                                       INNER JOIN grade_course ON student.grade_course_id = grade_course.id 
+                                       WHERE grade_course.id = ?''', (id_kierunku, ))
         items = studenci.fetchall()
         id_studentow = []
         for item in items:
@@ -233,7 +231,10 @@ class Controller():
             Sqlite.commit(self, self.__connection)
 
     def print_exams(self):
-        self.__curr.execute("SELECT exam.id, exam.name, course.name, grade_course.name FROM exam INNER JOIN course ON course.id = exam.course_id INNER JOIN grade_course ON course.grade_course_id = grade_course.id")
+        self.__curr.execute('''SELECT exam.id, exam.name, course.name, grade_course.name 
+                            FROM exam 
+                            INNER JOIN course ON course.id = exam.course_id 
+                            INNER JOIN grade_course ON course.grade_course_id = grade_course.id''')
         items = self.__curr.fetchall()
         print('Egzaminy')
         print('-'*50)
@@ -251,7 +252,12 @@ class Controller():
         Sqlite.commit(self, self.__connection)
 
     def print_exam_for_student(self):
-        self.__curr.execute("SELECT efs.id, efs.student_id, efs.grade, exam.name, course.name, student.first_name, student.last_name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id")
+        self.__curr.execute('''SELECT efs.id, efs.student_id, efs.grade, exam.name, 
+                            course.name, student.first_name, student.last_name 
+                            FROM exam_for_student as efs 
+                            INNER JOIN exam ON exam.id = efs.exam_id 
+                            INNER JOIN student ON efs.student_id = student.id 
+                            INNER JOIN course ON exam.course_id = course.id''')
         items = self.__curr.fetchall()
         print("Oceny z egzaminow")
         if items:
@@ -270,7 +276,12 @@ class Controller():
         print("Zmieniono ocenę")
 
     def print_avg_grade(self):
-        self.__curr.execute("SELECT AVG(efs.grade), course.name, student.first_name, student.last_name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id GROUP BY student.id, course.id")
+        self.__curr.execute('''SELECT AVG(efs.grade), course.name, student.first_name, student.last_name 
+                            FROM exam_for_student as efs 
+                            INNER JOIN exam ON exam.id = efs.exam_id 
+                            INNER JOIN student ON efs.student_id = student.id 
+                            INNER JOIN course ON exam.course_id = course.id 
+                            GROUP BY student.id, course.id''')
         items = self.__curr.fetchall()
         if items:
             df = pd.DataFrame(items)
@@ -280,7 +291,13 @@ class Controller():
             print("Nie ma zadnych egzaminow w bazie")
 
     def show_graph(self, course_id):
-        self.__curr.execute("SELECT ROUND(AVG(efs.grade),2), course.name, student.first_name, student.last_name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id GROUP BY student.id, course.id HAVING course.id = ?", (course_id, ))
+        self.__curr.execute('''SELECT ROUND(AVG(efs.grade),2), course.name, student.first_name, student.last_name 
+                            FROM exam_for_student as efs 
+                            INNER JOIN exam ON exam.id = efs.exam_id 
+                            INNER JOIN student ON efs.student_id = student.id 
+                            INNER JOIN course ON exam.course_id = course.id 
+                            GROUP BY student.id, course.id 
+                            HAVING course.id = ?''', (course_id, ))
         items = self.__curr.fetchall()
         courses = []
         avg_grades = []
@@ -296,7 +313,15 @@ class Controller():
         plt.show()
 
     def create_pdf(self, student_id):
-        self.__curr.execute("SELECT ROUND(AVG(efs.grade),2), course.name, student.id, student.first_name, student.last_name, student.age, student.phone, student.email, grade_course.name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id INNER JOIN grade_course ON grade_course.id = student.grade_course_id GROUP BY student.id, course.id HAVING student.id = ?", (student_id, ))
+        self.__curr.execute('''SELECT ROUND(AVG(efs.grade),2), course.name, student.id, student.first_name,
+                            student.last_name, student.age, student.phone, student.email, grade_course.name 
+                            FROM exam_for_student as efs 
+                            INNER JOIN exam ON exam.id = efs.exam_id 
+                            INNER JOIN student ON efs.student_id = student.id 
+                            INNER JOIN course ON exam.course_id = course.id 
+                            INNER JOIN grade_course ON grade_course.id = student.grade_course_id 
+                            GROUP BY student.id, course.id 
+                            HAVING student.id = ?''', (student_id, ))
         items = self.__curr.fetchall()
         pdf = FPDF()
         pdf.add_page()
