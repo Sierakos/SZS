@@ -224,9 +224,9 @@ class Controller():
         id_studentow = []
         for item in items:
             id_studentow.append(item[0])
-        ilosc_informatykow = len(items)
+        number_of_items = len(items)
 
-        for i in range(ilosc_informatykow):
+        for i in range(number_of_items):
             self.__curr.execute("INSERT INTO exam_for_student(student_id, exam_id) VALUES (?, ?)", (items[i][0], id_egzaminu))
             Sqlite.commit(self, self.__connection)
 
