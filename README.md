@@ -10,28 +10,28 @@ Aby pobawić się programem w wersji konsolowej należy:
 
 (zalecane)
 - utworzyć środowisko wirtualne oraz je włączyc
-'''
+```
 py -m venv env
 source env/scripts/activate
-'''
+```
 
 - pobrać kod
-'''
+```
 git clone https://github.com/Sierakos/SZS.git
-'''
+```
 
 - pobrać niezbędne biblioteki pythona z pliku requirements.txt
-'''
+```
 pip install -r requirements.txt
-'''
+```
 
 - włączyć właściwy program
-'''
+```
 cd SZS
 py view.py
-'''
+```
 
 - baze danych w każdym momencie można stworzyć za pomocą komendy
-'''
+```
 py db.py
-'''
+```
