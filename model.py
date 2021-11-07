@@ -5,6 +5,7 @@ class Student():
     __phone = 0
     __email = ""
     __message = ""
+    __grand_course_id = 0
 
     def __init__(self):
         print("Dodano objekt studenta")
@@ -25,9 +26,12 @@ class Student():
     def setEmail(self, par):
         self.__email = par
 
+    def setGCourseId(self, par):
+        self.__grand_course_id = par
+
     def setMessage(self, par):
         self.__message = par
-
+        
     # getters
     def getFname(self):
         return self.__first_name
@@ -43,6 +47,9 @@ class Student():
 
     def getEmail(self):
         return self.__email
+
+    def getGCourseId(self):
+        return self.__grand_course_id
     
     def getMessage(self):
         return self.__message

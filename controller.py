@@ -1,6 +1,10 @@
 from db_connect import Sqlite
 import re
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+from fpdf import FPDF
+
 # ctr
 class Controller():
     __connection=None
@@ -123,17 +127,34 @@ class Controller():
         self.__curr.execute("DELETE FROM student WHERE id = ?", (delete, ))
         Sqlite.commit(self, self.__connection)
 
-    def print_info_about_students(self):
+    def print_info_about_active_students(self):
+        self.__curr.execute("SELECT s.id, s.first_name, s.last_name, s.age, s.phone, s.email, gc.name FROM student as s INNER JOIN grade_course as gc ON gc.id = s.grade_course_id")
+        items = self.__curr.fetchall()
+        print('Aktywni studenci')
+        print('-'*50)
+        if items:
+            df = pd.DataFrame(items)
+            df.columns = 'id studenta', 'imie', 'nazwisko', 'wiek', 'nr_tel', 'email', 'kierunek'
+            print(df)
+        else:
+            print("Nie ma zadnych studentów w bazie")
+
+    def print_info_about_all_students(self):
         self.__curr.execute("SELECT * FROM student")
         items = self.__curr.fetchall()
-        print('Studenci')
+        print('Wszyscy studenci')
         print('-'*50)
-        df = pd.DataFrame(items)
-        df.columns = 'id', 'imie', 'nazwisko', 'wiek', 'nr_tel', 'email', 'kierunek'
-        print(df)
-        # for item in items:
-        #     print(item[1])
+        if items:
+            df = pd.DataFrame(items)
+            df.columns = 'id studenta', 'imie', 'nazwisko', 'wiek', 'nr_tel', 'email', 'kierunek'
+            print(df)
+        else:
+            print("Nie ma zadnych studentów w bazie")
 
+    def add_student_to_g_course(self, student_id, g_c_id):
+        self.__curr.execute("UPDATE student SET grade_course_id = ? WHERE student.id = ?", (g_c_id, student_id))
+        Sqlite.commit(self, self.__connection)
+        
     ### zapytania dla kierunku ###
     def add_grade_course_to_db(self, kierunek):
         self.__curr.execute("INSERT INTO grade_course(name) VALUES (?)", (kierunek, ))
@@ -144,11 +165,13 @@ class Controller():
         items = self.__curr.fetchall()
         print('Kierunki')
         print('-'*50)
-        df = pd.DataFrame(items)
-        df.columns = 'id', 'nazwa kierunku'
-        print(df)
-        # for item in items:
-        #     print(item)
+        if items:
+            df = pd.DataFrame(items)
+            df.columns = 'id', 'nazwa kierunku'
+            print(df)
+        else:
+            print("Nie ma zadnych kierunków w bazie")
+        
 
     def delete_grade_course(self, id):
         self.__curr.execute("DELETE FROM grade_course WHERE id = ?", (id, ))
@@ -164,9 +187,12 @@ class Controller():
         items = self.__curr.fetchall()
         print('Przedmioty')
         print('-'*50)
-        df = pd.DataFrame(items)
-        df.columns = 'id', 'nazwa przedmiotu', 'id kierunku'
-        print(df)
+        if items:
+            df = pd.DataFrame(items)
+            df.columns = 'id', 'nazwa przedmiotu', 'id kierunku'
+            print(df)
+        else:
+            print("Nie ma zadnych Przedmiotów w bazie")
         # for item in items:
         #     print(item)
 
@@ -211,28 +237,87 @@ class Controller():
         items = self.__curr.fetchall()
         print('Egzaminy')
         print('-'*50)
-        df = pd.DataFrame(items)
-        df.columns = 'id egzaminu', 'nazwa egzaminu', 'nazwa przedmiotu', 'nazwa kierunku'
-        print(df)
+        if items:
+            df = pd.DataFrame(items)
+            df.columns = 'id egzaminu', 'nazwa egzaminu', 'nazwa przedmiotu', 'nazwa kierunku'
+            print(df)
+        else:
+            print("Nie ma zadnych egzaminow w bazie")
         # for item in items:
         #     print(item)
 
     def delete_exam(self, id):
-        self.__curr.execute("PRAGMA foreign_keys = OFF")
         self.__curr.execute("DELETE FROM exam WHERE id = ?", (id, ))
-        self.__curr.execute("PRAGMA foreign_keys = OFF")
         Sqlite.commit(self, self.__connection)
 
     def print_exam_for_student(self):
-        self.__curr.execute("SELECT efs.id, efs.grade, exam.name, course.name, student.last_name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id")
+        self.__curr.execute("SELECT efs.id, efs.student_id, efs.grade, exam.name, course.name, student.first_name, student.last_name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id")
         items = self.__curr.fetchall()
         print("Oceny z egzaminow")
         if items:
             df = pd.DataFrame(items)
-            df.columns = 'id', 'ocena', 'nazwa egzaminu', 'przedmiot', 'nazwisko studenta'
+            df.columns = 'id', 'id studenta', 'ocena', 'nazwa egzaminu', 'przedmiot', 'imie studenta', 'nazwisko studenta'
             print(df)
         else:
             print("Nie ma zadnych egzaminow w bazie")
+
+    def add_grade_to_exam(self):
+        id = input("Wybierz id egzaminu z opcji nr.13: ")
+        student_id = input("Podaj id studenta: ")
+        grade = input("Podaj ocene: ")
+        self.__curr.execute("UPDATE exam_for_student SET grade = ? WHERE student_id = ? AND id = ?", (grade, student_id, id))
+        Sqlite.commit(self, self.__connection)
+        print("Zmieniono ocenę")
+
+    def print_avg_grade(self):
+        self.__curr.execute("SELECT AVG(efs.grade), course.name, student.first_name, student.last_name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id GROUP BY student.id, course.id")
+        items = self.__curr.fetchall()
+        if items:
+            df = pd.DataFrame(items)
+            df.columns = 'Ocena', 'nazwa przedmiotu', 'imie', 'nazwisko'
+            print(df)
+        else:
+            print("Nie ma zadnych egzaminow w bazie")
+
+    def show_graph(self, course_id):
+        self.__curr.execute("SELECT ROUND(AVG(efs.grade),2), course.name, student.first_name, student.last_name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id GROUP BY student.id, course.id HAVING course.id = ?", (course_id, ))
+        items = self.__curr.fetchall()
+        courses = []
+        avg_grades = []
+        for item in items:
+            courses.append(f"{item[2]} {item[3]}")
+            avg_grades.append(item[0])
+        print(avg_grades)
+        xpoints = np.array(courses)
+        ypoints = np.array(avg_grades)
+
+        plt.bar(xpoints, ypoints)
+        plt.ylim(2.0, 5.0)
+        plt.show()
+
+    def create_pdf(self, student_id):
+        self.__curr.execute("SELECT ROUND(AVG(efs.grade),2), course.name, student.id, student.first_name, student.last_name, student.age, student.phone, student.email, grade_course.name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id INNER JOIN grade_course ON grade_course.id = student.grade_course_id GROUP BY student.id, course.id HAVING student.id = ?", (student_id, ))
+        items = self.__curr.fetchall()
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=15)
+        # create a cell
+        try:
+            pdf.cell(200, 10, txt="Akademia Pana Kleksa srednie oceny", 
+                    ln=1, align='C')
+            pdf.cell(200, 10, txt=f"{items[0][3]} {items[0][4]} | {items[0][8]}", 
+                    ln=2, align='C')
+            line=3
+            for item in items:
+                print(item)
+                pdf.cell(200, 10, txt=f"{item[1]}: {item[0]}",
+                        ln=line)
+                line += 1
+            pdf.output(f"{items[0][2]}_{items[0][3]}_{items[0][4]}.pdf")
+        except:
+            print("Id studenta jest nieprawidlowe albo nie ma jeszcze zadnych ocen.")
+        
+        
 
     def close_db(self):
         Sqlite.close(self, self.__connection)
