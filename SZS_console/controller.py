@@ -1,9 +1,9 @@
-from db_connect import Sqlite
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from fpdf import FPDF
+from db_connect import Sqlite
 
 # ctr
 class Controller():
@@ -112,6 +112,8 @@ class Controller():
             return True
         else:
             return False
+
+    ### Funkcje konsolowe ###
 
     ### Zapytania dla studenta ###    
     def add_student_to_db(self, student, first_name, last_name, age=0, phone="", email=''):
@@ -338,11 +340,9 @@ class Controller():
                 pdf.cell(200, 10, txt=f"{item[1]}: {item[0]}",
                         ln=line)
                 line += 1
-            pdf.output(f"{items[0][2]}_{items[0][3]}_{items[0][4]}.pdf")
+            pdf.output(f"C:\\Users\\Sebastian\\Desktop\\studia\\ZPO\\test\\SZS\\pliki_pdf\\{items[0][2]}_{items[0][3]}_{items[0][4]}.pdf")
         except:
             print("Id studenta jest nieprawidlowe albo nie ma jeszcze zadnych ocen.")
-        
-        
 
     def close_db(self):
         Sqlite.close(self, self.__connection)

@@ -1,4 +1,6 @@
-class Student():
+from SZS_console import db_connect as db
+
+class Student(db.Sqlite):
     __first_name = ""
     __last_name = ""
     __age = 0
@@ -9,6 +11,8 @@ class Student():
 
     def __init__(self):
         print("Dodano objekt studenta")
+        self.connect()
+        self.c = self.conn.cursor()
 
     # setters
     def setFname(self, par):
@@ -31,6 +35,16 @@ class Student():
 
     def setMessage(self, par):
         self.__message = par
+
+    def addStudentToDb(self, fname, lname, age, phone, email, g_course_id):
+        self.c.execute('''INSERT INTO student(first_name, last_name, age, phone, email, grade_course_id)
+                       VALUES (?, ?, ?, ?, ?, ?)''',
+                       (fname, lname, age, phone, email, g_course_id))
+        self.conn.commit()
+
+    def deleteStudent(self, id):
+        self.c.execute("DELETE FROM student WHERE id = ?", (id, ))
+        self.conn.commit()
         
     # getters
     def getFname(self):
@@ -54,11 +68,27 @@ class Student():
     def getMessage(self):
         return self.__message
 
-class GradeCourse():
+    def getAllStudents(self):
+        self.c.execute('''SELECT student.id, first_name, last_name, age, phone, email, grade_course.name FROM student
+                       INNER JOIN grade_course on grade_course.id = student.grade_course_id''')
+        rows = self.c.fetchall()
+        return rows
+
+    def getBySearch(self, by, txt):
+        self.c.execute(f'''SELECT student.id, first_name, last_name, age, phone, email, grade_course.name FROM student
+                       INNER JOIN grade_course on grade_course.id = student.grade_course_id
+                       WHERE {by} LIKE "%{txt}%"''')
+        rows = self.c.fetchall()
+        return rows
+        
+
+class GradeCourse(db.Sqlite):
     __name = ""
 
     def __init__(self):
         print("Dodano objekt kierunku studiów")
+        self.connect()
+        self.c = self.conn.cursor()
 
     # setters
     def setName(self, par):
@@ -67,6 +97,18 @@ class GradeCourse():
     def setMessage(self, par):
         self.__message = par
 
+    def addGCourseToDb(self, par):
+        self.c.execute("INSERT INTO grade_course(name) VALUES(?)", (par, ))
+        self.conn.commit()
+
+    def updateGCourse(self, name, id):
+        self.c.execute("UPDATE grade_course SET name = ? WHERE id = ?", (name, id))
+        self.conn.commit()
+
+    def deleteGCourse(self, id):
+        self.c.execute("DELETE FROM grade_course WHERE id = ?", (id, ))
+        self.conn.commit()
+
     # getters
     def getName(self):
         return self.__name
@@ -74,13 +116,24 @@ class GradeCourse():
     def getMessage(self):
         return self.__message
 
-class Course():
+    def getAllGCourse(self):
+        self.c.execute("SELECT * FROM grade_course")
+        rows = self.c.fetchall()
+        return rows
+
+    def getBySearch(self, by, txt):
+        self.c.execute(f"SELECT * FROM grade_course WHERE {by} LIKE '%{txt}%'")
+        return self.c.fetchall()
+
+class Course(db.Sqlite):
     __name = ""
     __grade_course_id = 0
 
 
     def __init__(self):
         print("Dodano objekt przedmiotu")
+        self.connect()
+        self.c = self.conn.cursor()
 
     # setters
     def setName(self, par):
@@ -92,6 +145,18 @@ class Course():
     def setMessage(self, par):
         self.__message = par
 
+    def addCourseToDb(self, name, g_course):
+        self.c.execute("INSERT INTO course(name, grade_course_id) VALUES(?, ?)", (name, g_course))
+        self.conn.commit()
+
+    # def updateCourse(self, id, name, g_course):
+    #     self.c.execute("UPDATE course SET name = ?, grade_course_id = ? WHERE id = ?", (name, g_course, id))
+    #     self.conn.commit()
+
+    def deleteCourse(self, id):
+        self.c.execute("DELETE FROM course WHERE id = ?", (id, ))
+        self.conn.commit()
+
     # getters
     def getName(self):
         return self.__name
@@ -102,14 +167,30 @@ class Course():
     def getMessage(self):
         return self.__message
 
-class Exam():
+    def getAllCourse(self):
+        self.c.execute("SELECT course.id, course.name, grade_course.name FROM course INNER JOIN grade_course on grade_course.id = course.grade_course_id")
+        return self.c.fetchall()
+
+    def getAllNameGcourse(self):
+        self.c.execute("SELECT name FROM grade_course")
+        return self.c.fetchall()
+
+    def getBySearch(self, by, txt):
+        self.c.execute(f'''SELECT course.id, course.name, grade_course.name FROM course
+        INNER JOIN grade_course on grade_course.id = course.grade_course_id
+        WHERE {by} LIKE "%{txt}%"''')
+        return self.c.fetchall()
+
+class Exam(db.Sqlite):
     __name = ""
     __course_id = 0
 
 
     def __init__(self):
         print("Dodano objekt egzaminu")
-
+        self.connect()
+        self.c = self.conn.cursor()
+        
     # setters
     def setName(self, par):
         self.__name = par
@@ -119,6 +200,14 @@ class Exam():
 
     def setMessage(self, par):
         self.__message = par
+
+    def addExamToDb(self, name, course_id):
+        self.c.execute('INSERT INTO exam(name, course_id) VALUES(?,?)', (name, course_id))
+        self.conn.commit()
+
+    def deleteExam(self, id):
+        self.c.execute('DELETE FROM exam WHERE id = ?', (id,))
+        self.conn.commit()
 
     # getters
     def getName(self):
@@ -130,13 +219,25 @@ class Exam():
     def getMessage(self):
         return self.__message
 
-class ExamForStudent():
+    def getAllExam(self):
+        self.c.execute('''SELECT exam.id, exam.name, course.name, grade_course.name FROM exam 
+                        INNER JOIN course on course.id = exam.course_id
+                        INNER JOIN grade_course on grade_course.id = course.grade_course_id''')
+        return self.c.fetchall()
+
+    def getIdAndNameCOurse(self):
+        self.c.execute('SELECT course.id, course.name, grade_course.name FROM course INNER JOIN grade_course on grade_course.id = course.grade_course_id')
+        return self.c.fetchall()
+
+class ExamForStudent(db.Sqlite):
     __student_id = 0
     __exam_id = 0
     __grade = 0
 
     def __init__(self):
         print("Utworzono objekt egzaminu dla studentow")
+        self.connect()
+        self.c = self.conn.cursor()
 
     # setters
     def setStudentId(self, par):
@@ -164,4 +265,40 @@ class ExamForStudent():
     def getMessage(self):
         return self.__message
 
-    
+    def getEFS(self):
+        self.c.execute('''SELECT efs.id, student.last_name, exam.name, efs.grade 
+                        FROM exam_for_student as efs 
+                        INNER JOIN exam ON exam.id = efs.exam_id 
+                        INNER JOIN student ON efs.student_id = student.id 
+                        INNER JOIN course ON exam.course_id = course.id''')
+        return self.c.fetchall()
+
+    ### Za kazdym razem jak program dodaje egzamin to dla kazdego studenta danego kierunku w innej tabeli tworzy wiersz
+    ### laczacy danego studenta i egzamin
+    def createEFS(self, exam):
+
+        egz = self.c.execute("SELECT * FROM exam WHERE name = ?", (exam, ))
+        id_egzaminu = egz.fetchall()[-1][0]
+
+        id_kierunkow = self.c.execute('''SELECT grade_course.id FROM exam 
+                                           INNER JOIN course ON course.id = exam.course_id 
+                                           INNER JOIN grade_course ON course.grade_course_id = grade_course.id 
+                                           WHERE exam.name = ?''', (exam, ))
+        id_kierunku = id_kierunkow.fetchall()[0][0]
+        studenci = self.c.execute('''SELECT * FROM student 
+                                       INNER JOIN grade_course ON student.grade_course_id = grade_course.id 
+                                       WHERE grade_course.id = ?''', (id_kierunku, ))
+        items = studenci.fetchall()
+        id_studentow = []
+        for item in items:
+            id_studentow.append(item[0])
+        number_of_items = len(items)
+
+        for i in range(number_of_items):
+            self.c.execute("INSERT INTO exam_for_student(student_id, exam_id) VALUES (?, ?)", (items[i][0], id_egzaminu))
+            self.conn.commit()
+
+
+
+
+

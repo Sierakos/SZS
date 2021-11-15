@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect('Student_system_managment.db')
+conn = sqlite3.connect('C:\\Users\\Sebastian\\Desktop\\studia\\ZPO\\test\\SZS\\SZS_console\\Student_system_managment.db')
 c = conn.cursor()
 
 
@@ -109,14 +109,16 @@ c.execute('''CREATE TABLE IF NOT EXISTS exam_for_student(
 #         print('a')
 # print(f"Średnia ocen z przedmiotu 'Komputery' dla studenta {item[2]} {item[3]}: {grades/iterate}")
 
-# c.execute("INSERT INTO exam_for_student(student_id, exam_id, grade) VALUES(5, 5, 4.5)")
-# items = c.fetchall()
-# for item in items:
-#     print(item)
+c.execute("Select * FROM student")
+items = c.fetchall()
+for item in items:
+    print(item)
 
 # c.execute("SELECT ROUND(AVG(efs.grade),2), course.name, student.first_name, student.last_name, student.age, student.phone, student.email, grade_course.name FROM exam_for_student as efs INNER JOIN exam ON exam.id = efs.exam_id INNER JOIN student ON efs.student_id = student.id INNER JOIN course ON exam.course_id = course.id INNER JOIN grade_course ON grade_course.id = student.grade_course_id GROUP BY student.id, course.id HAVING efs.student_id = 2")
 # items = c.fetchall()
 # print(items)
+
+
 
 conn.commit()
 conn.close()

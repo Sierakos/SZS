@@ -27,7 +27,7 @@ pip install -r requirements.txt
 
 - włączyć właściwy program
 ```
-cd SZS
+cd SZS/SZS_console
 py view.py
 ```
 
