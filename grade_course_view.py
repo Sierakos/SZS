@@ -59,7 +59,7 @@ class GCoursePage(tk.Frame):
         search_label.grid(row=0, column=0, pady=10, padx=10)
 
         search_by=ttk.Combobox(self.content_frame, textvariable=self.search_by_var, font=('times new roman', 13, 'bold'), width=10, state='readonly')
-        search_by['values']=['name']
+        search_by['values']=['Nazwa kierunku']
         search_by.grid(row=0, column=1, padx=10, pady=10)
 
         search_txt=tk.Entry(self.content_frame, textvariable=self.search_txt_var, font=('times new roman', 14, 'bold'), width=12, bd=5, relief=tk.GROOVE)
@@ -122,7 +122,8 @@ class GCoursePage(tk.Frame):
             pass
 
     def search_gcourse(self):
-        rows = self.controller.search_by(self.search_by_var.get(), self.search_txt_var.get())
+        convert = {'Nazwa kierunku': 'name'}
+        rows = self.controller.search_grade_course_by(convert[self.search_by_var.get()], self.search_txt_var.get())
         for i in self.student_table.get_children():
             self.student_table.delete(i)
         for row in rows:

@@ -42,6 +42,11 @@ class Student(db.Sqlite):
                        (fname, lname, age, phone, email, g_course_id))
         self.conn.commit()
 
+    def updateStudent(self, id, fname, lname, age, phone, email, g_course_id):
+        self.c.execute('''UPDATE student SET first_name = ?, last_name = ?, age = ?, phone = ?, email = ?, grade_course_id = ? WHERE id = (?)''',
+                       (fname, lname, age, phone, email, g_course_id, id))
+        self.conn.commit()
+
     def deleteStudent(self, id):
         self.c.execute("DELETE FROM student WHERE id = ?", (id, ))
         self.conn.commit()
@@ -69,7 +74,7 @@ class Student(db.Sqlite):
         return self.__message
 
     def getAllStudents(self):
-        self.c.execute('''SELECT student.id, first_name, last_name, age, phone, email, grade_course.name FROM student
+        self.c.execute('''SELECT student.id, first_name, last_name, age, phone, email, grade_course.name, grade_course.id FROM student
                        INNER JOIN grade_course on grade_course.id = student.grade_course_id''')
         rows = self.c.fetchall()
         return rows
@@ -145,13 +150,15 @@ class Course(db.Sqlite):
     def setMessage(self, par):
         self.__message = par
 
-    def addCourseToDb(self, name, g_course):
-        self.c.execute("INSERT INTO course(name, grade_course_id) VALUES(?, ?)", (name, g_course))
+    def addCourseToDb(self, name, g_course_id):
+        self.setName(name)
+        self.setGradeCourseId(g_course_id)
+        self.c.execute("INSERT INTO course(name, grade_course_id) VALUES(?, ?)", (self.getName(), self.getGradeCourseId()))
         self.conn.commit()
 
-    # def updateCourse(self, id, name, g_course):
-    #     self.c.execute("UPDATE course SET name = ?, grade_course_id = ? WHERE id = ?", (name, g_course, id))
-    #     self.conn.commit()
+    def updateCourse(self, name, g_course_id, id):
+        self.c.execute("UPDATE course SET name = ?, grade_course_id = ? WHERE id = ?", (name, g_course_id, id))
+        self.conn.commit()
 
     def deleteCourse(self, id):
         self.c.execute("DELETE FROM course WHERE id = ?", (id, ))
@@ -168,15 +175,16 @@ class Course(db.Sqlite):
         return self.__message
 
     def getAllCourse(self):
-        self.c.execute("SELECT course.id, course.name, grade_course.name FROM course INNER JOIN grade_course on grade_course.id = course.grade_course_id")
+        self.c.execute('''SELECT course.id, course.name, grade_course.name, grade_course.id
+                    FROM course INNER JOIN grade_course on grade_course.id = course.grade_course_id''')
         return self.c.fetchall()
 
     def getAllNameGcourse(self):
-        self.c.execute("SELECT name FROM grade_course")
+        self.c.execute("SELECT id, name FROM grade_course")
         return self.c.fetchall()
 
     def getBySearch(self, by, txt):
-        self.c.execute(f'''SELECT course.id, course.name, grade_course.name FROM course
+        self.c.execute(f'''SELECT course.id, course.name, grade_course.name, grade_course.id FROM course
         INNER JOIN grade_course on grade_course.id = course.grade_course_id
         WHERE {by} LIKE "%{txt}%"''')
         return self.c.fetchall()
@@ -220,12 +228,12 @@ class Exam(db.Sqlite):
         return self.__message
 
     def getAllExam(self):
-        self.c.execute('''SELECT exam.id, exam.name, course.name, grade_course.name FROM exam 
+        self.c.execute('''SELECT exam.id, exam.name, course.name, grade_course.name, course.id FROM exam 
                         INNER JOIN course on course.id = exam.course_id
                         INNER JOIN grade_course on grade_course.id = course.grade_course_id''')
         return self.c.fetchall()
 
-    def getIdAndNameCOurse(self):
+    def getIdAndNameCourse(self):
         self.c.execute('SELECT course.id, course.name, grade_course.name FROM course INNER JOIN grade_course on grade_course.id = course.grade_course_id')
         return self.c.fetchall()
 
@@ -252,6 +260,10 @@ class ExamForStudent(db.Sqlite):
     def setMessage(self, par):
         self.__message = par
 
+    def add_or_update_grade(self, id, grade):
+        self.c.execute("UPDATE exam_for_student SET grade = ? WHERE id = ?", (grade, id))
+        self.conn.commit()
+
     # getters
     def getStudentId(self):
         return self.__student_id
@@ -266,7 +278,7 @@ class ExamForStudent(db.Sqlite):
         return self.__message
 
     def getEFS(self):
-        self.c.execute('''SELECT efs.id, student.last_name, exam.name, efs.grade 
+        self.c.execute('''SELECT efs.id, student.last_name, exam.name, efs.grade, student.id, course.id 
                         FROM exam_for_student as efs 
                         INNER JOIN exam ON exam.id = efs.exam_id 
                         INNER JOIN student ON efs.student_id = student.id 

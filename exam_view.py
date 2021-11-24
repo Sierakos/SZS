@@ -38,7 +38,7 @@ class ExamPage(tk.Frame):
         name_entry.grid(row=1, column=1, pady=10, padx=10, sticky="W")
 
         course_combo = ttk.Combobox(form_frame, textvariable=self.course_var, font=('times new roman', 13, 'bold'), state='readonly')
-        course_combo['values']=self.controller.get_courses()
+        course_combo['values']=self.controller.get_course_name()
         course_combo.grid(row=2, column=1, pady=10, padx=10, sticky="W")
 
         #==Form=buttons==#
@@ -49,8 +49,8 @@ class ExamPage(tk.Frame):
         add_btn=tk.Button(btn_frame, text="Dodaj", width=10, command=self.add_exam)
         add_btn.grid(row=0, column=0, padx=10, pady=10)
 
-        update_btn=tk.Button(btn_frame, text="Zaktualizuj", width=10)
-        update_btn.grid(row=0, column=1, padx=10, pady=10)
+        # update_btn=tk.Button(btn_frame, text="Zaktualizuj", width=10)
+        # update_btn.grid(row=0, column=1, padx=10, pady=10)
 
         delete_btn=tk.Button(btn_frame, text="Usuń", width=10, command=self.delete_exam)
         delete_btn.grid(row=0, column=2, padx=10, pady=10)
@@ -61,7 +61,7 @@ class ExamPage(tk.Frame):
         search_label.grid(row=0, column=0, pady=10, padx=10)
 
         search_by=ttk.Combobox(content_frame, textvariable=self.search_by_var, font=('times new roman', 13, 'bold'), width=10, state='readonly')
-        search_by['values']=['Przedmiot', 'Kierunek']
+        search_by['values']=['Egzamin', 'Kierunek', 'Student']
         search_by.grid(row=0, column=1, padx=10, pady=10)
 
         search_txt=tk.Entry(content_frame, textvariable=self.search_txt_var, font=('times new roman', 14, 'bold'), width=12, bd=5, relief=tk.GROOVE)
@@ -79,7 +79,7 @@ class ExamPage(tk.Frame):
 
         scroll_x=ttk.Scrollbar(table_frame,orient=tk.HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame,orient=tk.VERTICAL)
-        self.student_table=ttk.Treeview(table_frame,columns=('id','name','course_name','grade_course_name'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.student_table=ttk.Treeview(table_frame,columns=('id','name','course_name','grade_course_name','course_id'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
         scroll_x.pack(side=tk.BOTTOM,fill=tk.X)
         scroll_y.pack(side=tk.RIGHT,fill=tk.Y)
         scroll_x.config(command=self.student_table.xview)
@@ -88,8 +88,10 @@ class ExamPage(tk.Frame):
         self.student_table.heading('name',text='Nazwa egzaminu')
         self.student_table.heading('course_name',text='Przedmiot')
         self.student_table.heading('grade_course_name',text='Kierunek')
+        self.student_table.heading('course_id',text='Id przedmiotu')
         self.student_table['show']='headings'
         self.student_table.column('id',width=50)
+        self.student_table['displaycolumns']=('id','name','course_name','grade_course_name')
         self.student_table.pack(fill=tk.BOTH,expand=True)
         self.student_table.bind('<ButtonRelease-1>', self.get_cursor)
         self.show_exam_data()
@@ -102,16 +104,14 @@ class ExamPage(tk.Frame):
             self.student_table.insert('', 'end', values=row)
 
     def add_exam(self):
-        gcourse_id = ''
+        course_id = ''
         for i in self.course_var.get():
             if i == ' ':
                 break
-            gcourse_id += i
+            course_id += i
 
-        self.controller.add_exam(self.name_var.get(), gcourse_id)
+        self.controller.add_exam(self.name_var.get(), course_id)
         self.show_exam_data()
-        
-
 
     def delete_exam(self):
         self.controller.delete_exam(self.id_var.get())
@@ -125,6 +125,6 @@ class ExamPage(tk.Frame):
 
             self.id_var.set(row[0])
             self.name_var.set(row[1])
-            self.course_var.set(row[2])
+            self.course_var.set(str(row[4]) + " " + str(row[2] + " " + str(row[3])))
         except:
             pass

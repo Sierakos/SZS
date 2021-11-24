@@ -15,6 +15,7 @@ class StudentPage(tk.Frame):
         self.phone_var=tk.StringVar()
         self.email_var=tk.StringVar()
         self.gcourse_var=tk.StringVar()
+        self.gcourse_id_var=tk.StringVar()
 
         self.search_by_var=tk.StringVar()
         self.search_txt_var=tk.StringVar()
@@ -77,7 +78,7 @@ class StudentPage(tk.Frame):
         add_btn=tk.Button(btn_frame, text="Dodaj", width=10, command=self.add_student)
         add_btn.grid(row=0, column=0, padx=10, pady=10)
 
-        update_btn=tk.Button(btn_frame, text="Zaktualizuj", width=10)
+        update_btn=tk.Button(btn_frame, text="Zaktualizuj", width=10, command=self.update_student_data)
         update_btn.grid(row=0, column=1, padx=10, pady=10)
 
         delete_btn=tk.Button(btn_frame, text="Usuń", width=10, command=self.delete_student)
@@ -107,7 +108,7 @@ class StudentPage(tk.Frame):
         
         scroll_x=ttk.Scrollbar(table_frame,orient=tk.HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame,orient=tk.VERTICAL)
-        self.student_table=ttk.Treeview(table_frame,columns=('id','first_name','last_name','age','phone','email','grade_course'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.student_table=ttk.Treeview(table_frame,columns=('id','first_name','last_name','age','phone','email','grade_course','grade_course_id'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
         scroll_x.pack(side=tk.BOTTOM,fill=tk.X)
         scroll_y.pack(side=tk.RIGHT,fill=tk.Y)
         scroll_x.config(command=self.student_table.xview)
@@ -119,10 +120,12 @@ class StudentPage(tk.Frame):
         self.student_table.heading('phone',text='nr. tel')
         self.student_table.heading('email',text='email')
         self.student_table.heading('grade_course',text='kierunek')
+        self.student_table.heading('grade_course_id',text='id kierunku')
         self.student_table['show']='headings'
         self.student_table.column('id',width=50)
         self.student_table.column('age',width=50)
         self.student_table.column('phone',width=100)
+        self.student_table['displaycolumns']=('id','first_name','last_name','age','phone','email','grade_course')
         self.student_table.pack(fill=tk.BOTH,expand=True)
         self.student_table.bind('<ButtonRelease-1>', self.get_cursor)
         self.show_students_data()
@@ -144,6 +147,16 @@ class StudentPage(tk.Frame):
             for row in rows:
                 self.student_table.insert('',tk.END,values=row)
 
+    def update_student_data(self):
+        gcourse_id = ''
+        for i in self.gcourse_var.get():
+            if i == ' ':
+                break
+            gcourse_id += i
+
+        self.controller.update_student(self.id_var.get(), self.fname_var.get(), self.lname_var.get(), self.age_var.get(), self.phone_var.get(), self.email_var.get(), gcourse_id)
+        self.show_students_data()
+
     def get_cursor(self, ev):
         try:
             cursor_row=self.student_table.focus()
@@ -156,7 +169,7 @@ class StudentPage(tk.Frame):
             self.age_var.set(row[3])
             self.phone_var.set(row[4])
             self.email_var.set(row[5])
-            self.gcourse_var.set(row[6])
+            self.gcourse_var.set(str(row[7]) + " " + str(row[6]))
         except:
             pass
             

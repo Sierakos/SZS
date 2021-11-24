@@ -11,6 +11,8 @@ class EFSPage(tk.Frame):
         self.student_var=tk.StringVar()
         self.exam_var=tk.StringVar()
         self.grade_var=tk.StringVar()
+        self.student_id_var=tk.StringVar()
+        self.exam_id_var=tk.StringVar()
 
         self.search_by_var=tk.StringVar()
         self.search_txt_var=tk.StringVar()
@@ -37,26 +39,28 @@ class EFSPage(tk.Frame):
 
         #==Form=entry==#
 
-        student_combo = ttk.Combobox(form_frame, textvariable=self.student_var, font=('times new roman', 13, 'bold'), state='readonly')
-        student_combo['values']=['Student 1', 'Student 2', 'Student 3']
+        student_combo = tk.Entry(form_frame, textvariable=self.student_var, font=('times new roman', 15, 'bold'), state='readonly')
         student_combo.grid(row=1, column=1, pady=10, padx=10, sticky="W")
 
-        exam_combo = ttk.Combobox(form_frame, textvariable=self.exam_var, font=('times new roman', 13, 'bold'), state='readonly')
-        exam_combo['values']=['Egzamin 1', 'Egzamin 2']
+        exam_combo = tk.Entry(form_frame, textvariable=self.exam_var, font=('times new roman', 15, 'bold'), state='readonly')
         exam_combo.grid(row=2, column=1, pady=10, padx=10, sticky="W")
 
-        grade_entry = tk.Entry(form_frame, textvariable=self.grade_var, font=('times new roman', 15, 'bold'))
-        grade_entry.grid(row=3, column=1, pady=10, padx=10, sticky="W")
+        # grade_entry = tk.Entry(form_frame, textvariable=self.grade_var, font=('times new roman', 15, 'bold'))
+        # grade_entry.grid(row=3, column=1, pady=10, padx=10, sticky="W")
+
+        grade_combo = ttk.Combobox(form_frame, textvariable=self.grade_var, font=('times new roman', 13, 'bold'), state='readonly')
+        grade_combo['values']=('2', '3', '3.5', '4', '4.5', '5')
+        grade_combo.grid(row=3, column=1, pady=10, padx=10, sticky="W")
 
         #==Form=buttons==#
 
         btn_frame=tk.Frame(form_frame, bd=4, relief=tk.RIDGE, bg="gray")
         btn_frame.place(x=120, y=530, width=310, height=50)
 
-        add_btn=tk.Button(btn_frame, text="Dodaj", width=10)
+        add_btn=tk.Button(btn_frame, text="Dodaj ocenę", width=10, command=self.add_or_update_grade)
         add_btn.grid(row=0, column=0, padx=10, pady=10)
 
-        update_btn=tk.Button(btn_frame, text="Zaktualizuj", width=10)
+        update_btn=tk.Button(btn_frame, text="Zaktualizuj ocenę", width=10)
         update_btn.grid(row=0, column=1, padx=10, pady=10)
 
         delete_btn=tk.Button(btn_frame, text="Usuń", width=10)
@@ -90,7 +94,7 @@ class EFSPage(tk.Frame):
 
         scroll_x=ttk.Scrollbar(table_frame,orient=tk.HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame,orient=tk.VERTICAL)
-        self.student_table=ttk.Treeview(table_frame,columns=('id','student','exam','grade'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.student_table=ttk.Treeview(table_frame,columns=('id','student','exam','grade','student_id','course_id'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
         scroll_x.pack(side=tk.BOTTOM,fill=tk.X)
         scroll_y.pack(side=tk.RIGHT,fill=tk.Y)
         scroll_x.config(command=self.student_table.xview)
@@ -99,10 +103,17 @@ class EFSPage(tk.Frame):
         self.student_table.heading('student',text='Student')
         self.student_table.heading('exam',text='Egzamin')
         self.student_table.heading('grade',text='ocena')
+        self.student_table.heading('student_id',text='Id studenta')
+        self.student_table.heading('course_id',text='Id przedmiotu')
         self.student_table['show']='headings'
         self.student_table.column('id',width=50)
+        self.student_table['displaycolumns']=('id','student','exam','grade')
         self.student_table.pack(fill=tk.BOTH,expand=True)
-        # self.student_table.bind('<ButtonRelease-1>', self.get_cursor)
+        self.student_table.bind('<ButtonRelease-1>', self.get_cursor)
+        self.show_efs_data()
+
+    def add_or_update_grade(self):
+        self.controller.add_or_update_grade(self.id_var.get(), self.grade_var.get())
         self.show_efs_data()
 
     def show_efs_data(self):
@@ -119,11 +130,12 @@ class EFSPage(tk.Frame):
             row=content['values']
 
             self.id_var.set(row[0])
-            self.fname_var.set(row[1])
-            self.lname_var.set(row[2])
-            self.age_var.set(row[3])
-            self.phone_var.set(row[4])
-            self.email_var.set(row[5])
-            self.gcourse_var.set(row[6])
+            self.student_var.set(row[1])
+            self.exam_var.set(row[2])
+            self.grade_var.set(row[3])
+            if self.grade_var.get() == 'None':
+                self.grade_var.set("")
+            self.student_id_var.set(row[4])
+            self.exam_id_var.set(row[5])
         except:
             pass

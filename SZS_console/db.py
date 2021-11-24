@@ -24,18 +24,14 @@ c.execute('''CREATE TABLE IF NOT EXISTS course(
     id INTEGER NOT NULL PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     grade_course_id INTEGER NOT NULL,
-    FOREIGN KEY (grade_course_id)
-    REFERENCES grade_course(id)
-    ON DELETE CASCADE
+    FOREIGN KEY (grade_course_id) REFERENCES grade_course(id) ON DELETE CASCADE
 )''')
 
 c.execute('''CREATE TABLE IF NOT EXISTS exam(
     id INTEGER NOT NULL PRIMARY KEY,
     name VARCHAR(120) NOT NULL,
     course_id INTEGER NOT NULL,
-    FOREIGN KEY(course_id)
-    REFERENCES course(id)
-    ON DELETE CASCADE
+    FOREIGN KEY(course_id) REFERENCES course(id) ON DELETE CASCADE
 )''')
 
 c.execute('''CREATE TABLE IF NOT EXISTS exam_for_student(
@@ -43,7 +39,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS exam_for_student(
     student_id INTEGER NOT NULL,
     exam_id INTEGER NOT NULL,
     grade INTEGER(10),
-    FOREIGN KEY(student_id) REFERENCES student(id),
+    FOREIGN KEY(student_id) REFERENCES student(id) ON DELETE CASCADE,
     FOREIGN KEY(exam_id) REFERENCES exam(id) ON DELETE CASCADE
 )''')
 

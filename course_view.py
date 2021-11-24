@@ -48,8 +48,8 @@ class CoursePage(tk.Frame):
         add_btn=tk.Button(btn_frame, text="Dodaj", width=10, command=self.add_course)
         add_btn.grid(row=0, column=0, padx=10, pady=10)
 
-        # update_btn=tk.Button(btn_frame, text="Zaktualizuj", width=10, command=self.update_course)
-        # update_btn.grid(row=0, column=1, padx=10, pady=10)
+        update_btn=tk.Button(btn_frame, text="Zaktualizuj", width=10, command=self.update_course)
+        update_btn.grid(row=0, column=1, padx=10, pady=10)
 
         delete_btn=tk.Button(btn_frame, text="Usuń", width=10, command=self.delete_course)
         delete_btn.grid(row=0, column=2, padx=10, pady=10)
@@ -80,7 +80,7 @@ class CoursePage(tk.Frame):
 
         scroll_x=ttk.Scrollbar(table_frame,orient=tk.HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame,orient=tk.VERTICAL)
-        self.student_table=ttk.Treeview(table_frame,columns=('id','name','gcourse'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.student_table=ttk.Treeview(table_frame,columns=('id','name','gcourse','gcourse_id'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
         scroll_x.pack(side=tk.BOTTOM,fill=tk.X)
         scroll_y.pack(side=tk.RIGHT,fill=tk.Y)
         scroll_x.config(command=self.student_table.xview)
@@ -88,8 +88,10 @@ class CoursePage(tk.Frame):
         self.student_table.heading('id',text='id')
         self.student_table.heading('name',text='Nazwa przedmiotu')
         self.student_table.heading('gcourse',text='Nazwa kierunku')
+        self.student_table.heading('gcourse_id',text='id kierunku')
         self.student_table['show']='headings'
         self.student_table.column('id',width=50)
+        self.student_table['displaycolumns']=('id','name','gcourse')
         self.student_table.pack(fill=tk.BOTH,expand=True)
         self.student_table.bind('<ButtonRelease-1>', self.get_cursor)
         self.show_course_data()
@@ -111,15 +113,15 @@ class CoursePage(tk.Frame):
         for row in rows:
             self.student_table.insert('', 'end', values=row)
 
-    # def update_course(self):
-    #     gcourse_id = ''
-    #     for i in self.gcourse_var.get():
-    #         if i == ' ':
-    #             break
-    #         gcourse_id += i
+    def update_course(self):
+        gcourse_id = ''
+        for i in self.gcourse_var.get():
+            if i == ' ':
+                break
+            gcourse_id += i
 
-    #     self.controller.update_course(self.id_var.get(), self.name_var.get(), gcourse_id)
-    #     self.show_course_data()
+        self.controller.update_course(self.name_var.get(), gcourse_id, self.id_var.get())
+        self.show_course_data()
 
     def delete_course(self):
         self.controller.delete_course(self.id_var.get())
@@ -133,7 +135,7 @@ class CoursePage(tk.Frame):
 
             self.id_var.set(row[0])
             self.name_var.set(row[1])
-            self.gcourse_var.set(row[2])
+            self.gcourse_var.set(str(row[3])+ " " +str(row[2]))
         except:
             pass
 
@@ -141,7 +143,8 @@ class CoursePage(tk.Frame):
         self.gcourse_combo['values']=self.controller.display_all_gcourse_data()
 
     def search_course(self):
-        convert = {'Przedmiot': 'course.name', 'Kierunek': 'grade_course.name'}
+        convert = {'Przedmiot': 'course.name',
+                   'Kierunek': 'grade_course.name'}
         rows = self.controller.search_course_by(convert[self.search_by_var.get()], self.search_txt_var.get())
         for i in self.student_table.get_children():
             self.student_table.delete(i)
