@@ -22,7 +22,6 @@ git clone https://github.com/Sierakos/SZS.git
 
 - pobrać niezbędne biblioteki pythona z pliku requirements.txt
 ```
-cd SZS
 pip install -r requirements.txt
 ```
 
