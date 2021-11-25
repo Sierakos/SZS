@@ -33,5 +33,5 @@ py projekt.py
 
 - baze danych w każdym momencie można stworzyć za pomocą komendy
 ```
-py db.py
+py models/db.py
 ```
