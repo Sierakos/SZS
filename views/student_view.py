@@ -196,3 +196,4 @@ class StudentPage(tk.Frame):
 
     def create_PDF(self):
         self.controller.create_PDF(self.id_var.get())
+        

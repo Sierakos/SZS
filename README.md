@@ -28,10 +28,16 @@ pip install -r requirements.txt
 - włączyć właściwy program
 ```
 cd SZS
-py projekt.py
+py SZS.py
+```
+
+- aby włączyć wersję konsolową programu należy wpisać
+```
+py SZS_konsolowa.py
 ```
 
 - baze danych w każdym momencie można stworzyć za pomocą komendy
 ```
 py models/db.py
 ```
+

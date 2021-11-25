@@ -138,3 +138,4 @@ class ExamPage(tk.Frame):
             self.exam_table.delete(i)
         for row in rows:
             self.exam_table.insert('', 'end', values=row)
+            

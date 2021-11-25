@@ -131,3 +131,4 @@ class EFSPage(tk.Frame):
             self.exam_id_var.set(row[5])
         except:
             pass
+        
