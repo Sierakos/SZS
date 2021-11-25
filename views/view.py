@@ -1,3 +1,5 @@
+# TODO: Poprawić wygląd programu
+
 from tkinter import *
 from .student_view import StudentPage
 from .grade_course_view import GCoursePage
@@ -23,6 +25,7 @@ class App(Tk):
         self._show_nav_frame()
         self._show_buttons()
         self._show_content_frame()
+        self._show_footer_frame()
         self._center_window()
 
         self.frames = {}
@@ -78,10 +81,10 @@ class App(Tk):
         self.content_frame = Frame(self.main_frame)
         self.content_frame.place(x=0, y=150, width=1800, height=700)
 
+    def _show_footer_frame(self):
+        self.footer_frame = Frame(self.main_frame, bg='black')
+        self.footer_frame.place(x=0, y=850, width=1800, height=50)
 
-
-
-
-
-
-
+        footer = Label(self.footer_frame, text='Aplikacja stworzona przez Sebastiana Sieradzkiego na potrzeby projektu',
+        bg='black', bd=10, fg='white', font=('Times New Roman', 10, 'bold'))
+        footer.pack(side=TOP, fill=X)

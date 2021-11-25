@@ -34,16 +34,15 @@ class View():
             x = input("Podaj opcje: ")
 
             if x == "1":
-                s = Student()
-                s.setFname(input("Wpisz imie studenta, którego chcesz utworzyć: "))
-                s.setLname(input("Wpisz nazwisko studenta, którego chcesz utworzyć: "))
-                s.setAge(input("Wpisz wiek studenta, którego chcesz utworzyć: "))
-                s.setPhone(input("Wpisz numer telefonu ucznia, którego chcesz utworzyć: "))
-                s.setEmail(input("Wpisz e-mail ucznia, którego chcesz utworzyć: "))
-                if ctr.studentForm(s) == True:
-                    ctr.add_student_to_db(s, s.getFname(), s.getLname(), s.getAge(), s.getPhone(), s.getEmail())
-                else:
-                    print(s.getMessage())
+                fname = (input("Wpisz imie studenta, którego chcesz utworzyć: "))
+                lname = (input("Wpisz nazwisko studenta, którego chcesz utworzyć: "))
+                age = (input("Wpisz wiek studenta, którego chcesz utworzyć: "))
+                phone = (input("Wpisz numer telefonu studenta, którego chcesz utworzyć: "))
+                email = (input("Wpisz e-mail studenta, którego chcesz utworzyć: "))
+                gcourse_id = (input("Wpisz id kierunku do którego chcesz dodać studenta"))
+
+                ctr.add_student_to_db(fname, lname, age, phone, email, gcourse_id)
+    
             elif x == "d":
                 student = Student()
                 student_id = input("Wpisz id studenta: ")

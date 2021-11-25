@@ -1,3 +1,7 @@
+# TODO: Zrobić poprawne dodawanie do bazy
+# TODO: dodać walidacje (czy dana wartość w bazie danych już istnieje)
+#       zwłaszcza dla kierunku
+
 from . import db_connect as db
 
 class Student(db.Sqlite):
@@ -10,7 +14,6 @@ class Student(db.Sqlite):
     __grand_course_id = 0
 
     def __init__(self):
-        print("Dodano objekt studenta")
         self.connect()
         self.c = self.conn.cursor()
 
@@ -103,7 +106,6 @@ class GradeCourse(db.Sqlite):
     __name = ""
 
     def __init__(self):
-        print("Dodano objekt kierunku studiów")
         self.connect()
         self.c = self.conn.cursor()
 
@@ -146,9 +148,7 @@ class Course(db.Sqlite):
     __name = ""
     __grade_course_id = 0
 
-
     def __init__(self):
-        print("Dodano objekt przedmiotu")
         self.connect()
         self.c = self.conn.cursor()
 
@@ -217,7 +217,6 @@ class Exam(db.Sqlite):
 
 
     def __init__(self):
-        print("Dodano objekt egzaminu")
         self.connect()
         self.c = self.conn.cursor()
         
@@ -272,7 +271,6 @@ class ExamForStudent(db.Sqlite):
     __grade = 0
 
     def __init__(self):
-        print("Utworzono objekt egzaminu dla studentow")
         self.connect()
         self.c = self.conn.cursor()
 
@@ -338,8 +336,3 @@ class ExamForStudent(db.Sqlite):
         for i in range(number_of_items):
             self.c.execute("INSERT INTO exam_for_student(student_id, exam_id) VALUES (?, ?)", (items[i][0], id_egzaminu))
             self.conn.commit()
-
-
-
-
-

@@ -1,5 +1,8 @@
+# TODO: Dodać walidacje
+
 from views.view import App
 from models.model import Student, GradeCourse, Course, Exam, ExamForStudent
+from views.view_console.view_console import ConsoleView
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,17 +11,20 @@ from fpdf import FPDF
 import os
 
 class Controller:
-
     def __init__(self):
         self.st = Student()
         self.gc = GradeCourse()
         self.co = Course()
         self.ex = Exam()
         self.efs = ExamForStudent()
-        self.view = App(self)
 
     def main(self):
+        self.view = App(self)
         self.view.main()
+
+    def main_console(self):
+        self.console_view = ConsoleView(self)
+        self.console_view.main()
 
     def on_nav_button_click(self, nav_title):
         buttons = self.view.nav_buttons
@@ -29,10 +35,7 @@ class Controller:
     # Okno studenta
 
     def display_all_students_data(self):
-        
         return(self.st.getAllStudents())
-
-    # Walidacja wieku (musi być liczbą całkowitą)
 
     def add_student(self, fname, lname, age, phone, email, gcourse_id):
         try:
@@ -62,7 +65,7 @@ class Controller:
         try:
             os.makedirs("pliki_pdf")
         except FileExistsError:
-            # foler już istnieje
+            # folder już istnieje
             pass
        
         try:
@@ -72,7 +75,6 @@ class Controller:
                     ln=2, align='C')
             line=3
             for row in rows:
-                print(row)
                 pdf.cell(200, 10, txt=f"{row[1]}: {row[0]}",
                         ln=line)
                 line += 1
@@ -118,7 +120,6 @@ class Controller:
         for row in rows:
             courses.append(f"{row[2]} {row[3]}")
             avg_grades.append(row[0])
-        print(avg_grades)
         xpoints = np.array(courses)
         ypoints = np.array(avg_grades)
 
@@ -151,8 +152,3 @@ class Controller:
 
     def add_or_update_grade(self, id, grade):
         self.efs.add_or_update_grade(id, grade)
-
-
-if __name__ == '__main__':
-    app = Controller()
-    app.main()
