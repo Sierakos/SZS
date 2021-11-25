@@ -3,4 +3,4 @@ archive/
 __pycache__
 pliki_pdf
 *.pdf
-SZS_console/
+SZS_console
