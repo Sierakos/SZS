@@ -1,9 +1,9 @@
 from tkinter import *
-from student_view import StudentPage
-from grade_course_view import GCoursePage
-from course_view import CoursePage
-from exam_view import ExamPage
-from efs_view import EFSPage
+from .student_view import StudentPage
+from .grade_course_view import GCoursePage
+from .course_view import CoursePage
+from .exam_view import ExamPage
+from .efs_view import EFSPage
 
 class App(Tk):
     nav_buttons = [

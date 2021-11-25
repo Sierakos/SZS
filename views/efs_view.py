@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 class EFSPage(tk.Frame):
+    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
@@ -45,9 +46,6 @@ class EFSPage(tk.Frame):
         exam_combo = tk.Entry(form_frame, textvariable=self.exam_var, font=('times new roman', 15, 'bold'), state='readonly')
         exam_combo.grid(row=2, column=1, pady=10, padx=10, sticky="W")
 
-        # grade_entry = tk.Entry(form_frame, textvariable=self.grade_var, font=('times new roman', 15, 'bold'))
-        # grade_entry.grid(row=3, column=1, pady=10, padx=10, sticky="W")
-
         grade_combo = ttk.Combobox(form_frame, textvariable=self.grade_var, font=('times new roman', 13, 'bold'), state='readonly')
         grade_combo['values']=('2', '3', '3.5', '4', '4.5', '5')
         grade_combo.grid(row=3, column=1, pady=10, padx=10, sticky="W")
@@ -57,14 +55,8 @@ class EFSPage(tk.Frame):
         btn_frame=tk.Frame(form_frame, bd=4, relief=tk.RIDGE, bg="gray")
         btn_frame.place(x=120, y=530, width=310, height=50)
 
-        add_btn=tk.Button(btn_frame, text="Dodaj ocenę", width=10, command=self.add_or_update_grade)
+        add_btn=tk.Button(btn_frame, text="Dodaj/aktualizuj ocenę", width=39, command=self.add_or_update_grade)
         add_btn.grid(row=0, column=0, padx=10, pady=10)
-
-        update_btn=tk.Button(btn_frame, text="Zaktualizuj ocenę", width=10)
-        update_btn.grid(row=0, column=1, padx=10, pady=10)
-
-        delete_btn=tk.Button(btn_frame, text="Usuń", width=10)
-        delete_btn.grid(row=0, column=2, padx=10, pady=10)
 
         #==Content==#
 
@@ -94,22 +86,22 @@ class EFSPage(tk.Frame):
 
         scroll_x=ttk.Scrollbar(table_frame,orient=tk.HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame,orient=tk.VERTICAL)
-        self.student_table=ttk.Treeview(table_frame,columns=('id','student','exam','grade','student_id','course_id'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.efs_table=ttk.Treeview(table_frame,columns=('id','student','exam','grade','student_id','course_id'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
         scroll_x.pack(side=tk.BOTTOM,fill=tk.X)
         scroll_y.pack(side=tk.RIGHT,fill=tk.Y)
-        scroll_x.config(command=self.student_table.xview)
-        scroll_y.config(command=self.student_table.yview)
-        self.student_table.heading('id',text='id')
-        self.student_table.heading('student',text='Student')
-        self.student_table.heading('exam',text='Egzamin')
-        self.student_table.heading('grade',text='ocena')
-        self.student_table.heading('student_id',text='Id studenta')
-        self.student_table.heading('course_id',text='Id przedmiotu')
-        self.student_table['show']='headings'
-        self.student_table.column('id',width=50)
-        self.student_table['displaycolumns']=('id','student','exam','grade')
-        self.student_table.pack(fill=tk.BOTH,expand=True)
-        self.student_table.bind('<ButtonRelease-1>', self.get_cursor)
+        scroll_x.config(command=self.efs_table.xview)
+        scroll_y.config(command=self.efs_table.yview)
+        self.efs_table.heading('id',text='id')
+        self.efs_table.heading('student',text='Student')
+        self.efs_table.heading('exam',text='Egzamin')
+        self.efs_table.heading('grade',text='ocena')
+        self.efs_table.heading('student_id',text='Id studenta')
+        self.efs_table.heading('course_id',text='Id przedmiotu')
+        self.efs_table['show']='headings'
+        self.efs_table.column('id',width=50)
+        self.efs_table['displaycolumns']=('id','student','exam','grade')
+        self.efs_table.pack(fill=tk.BOTH,expand=True)
+        self.efs_table.bind('<ButtonRelease-1>', self.get_cursor)
         self.show_efs_data()
 
     def add_or_update_grade(self):
@@ -118,15 +110,15 @@ class EFSPage(tk.Frame):
 
     def show_efs_data(self):
         rows = self.controller.display_all_efs_data()
-        for i in self.student_table.get_children():
-            self.student_table.delete(i)
+        for i in self.efs_table.get_children():
+            self.efs_table.delete(i)
         for row in rows:
-            self.student_table.insert('', 'end', values=row)
+            self.efs_table.insert('', 'end', values=row)
 
     def get_cursor(self, ev):
         try:
-            cursor_row=self.student_table.focus()
-            content=self.student_table.item(cursor_row)
+            cursor_row=self.efs_table.focus()
+            content=self.efs_table.item(cursor_row)
             row=content['values']
 
             self.id_var.set(row[0])

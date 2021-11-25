@@ -311,7 +311,7 @@ class Controller():
         ypoints = np.array(avg_grades)
 
         plt.bar(xpoints, ypoints)
-        plt.ylim(2.0, 5.0)
+        plt.ylim(1.0, 5.0)
         plt.show()
 
     def create_pdf(self, student_id):
@@ -328,7 +328,7 @@ class Controller():
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=15)
-        # create a cell
+       
         try:
             pdf.cell(200, 10, txt="Akademia Pana Kleksa srednie oceny", 
                     ln=1, align='C')

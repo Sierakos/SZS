@@ -2,7 +2,7 @@
 
 Program obsługujący prosty CRUD do zarządzania studentami w systemie. 
 
-Aby pobawić się programem w wersji konsolowej należy:
+Aby włączyć program należy:
 
 - zainstalować najnowszą wersję pythona 3
 - zainstalować i skonfigurować GIT
@@ -27,8 +27,8 @@ pip install -r requirements.txt
 
 - włączyć właściwy program
 ```
-cd SZS/SZS_console
-py view.py
+cd SZS
+py projekt.py
 ```
 
 - baze danych w każdym momencie można stworzyć za pomocą komendy

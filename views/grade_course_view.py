@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 class GCoursePage(tk.Frame):
+    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         print('gcourse object')
@@ -77,18 +78,18 @@ class GCoursePage(tk.Frame):
 
         scroll_x=ttk.Scrollbar(table_frame,orient=tk.HORIZONTAL)
         scroll_y=ttk.Scrollbar(table_frame,orient=tk.VERTICAL)
-        self.student_table=ttk.Treeview(table_frame,columns=('id','name'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
+        self.grade_course_table=ttk.Treeview(table_frame,columns=('id','name'),xscrollcommand=scroll_x.set,yscrollcommand=scroll_y.set)
         scroll_x.pack(side=tk.BOTTOM,fill=tk.X)
         scroll_y.pack(side=tk.RIGHT,fill=tk.Y)
-        scroll_x.config(command=self.student_table.xview)
-        scroll_y.config(command=self.student_table.yview)
-        self.student_table.heading('id',text='id')
-        self.student_table.heading('name',text='nazwa kierunku')
-        self.student_table['show']='headings'
-        self.student_table.column('id',width=50)
-        self.student_table.column('name',width=100)
-        self.student_table.pack(fill=tk.BOTH,expand=True)
-        self.student_table.bind('<ButtonRelease-1>', self.get_cursor)
+        scroll_x.config(command=self.grade_course_table.xview)
+        scroll_y.config(command=self.grade_course_table.yview)
+        self.grade_course_table.heading('id',text='id')
+        self.grade_course_table.heading('name',text='nazwa kierunku')
+        self.grade_course_table['show']='headings'
+        self.grade_course_table.column('id',width=50)
+        self.grade_course_table.column('name',width=100)
+        self.grade_course_table.pack(fill=tk.BOTH,expand=True)
+        self.grade_course_table.bind('<ButtonRelease-1>', self.get_cursor)
         self.show_gcourse_data()
 
     def add_gcourse(self):
@@ -97,10 +98,10 @@ class GCoursePage(tk.Frame):
 
     def show_gcourse_data(self):
         rows = self.controller.display_all_gcourse_data()
-        for i in self.student_table.get_children():
-            self.student_table.delete(i)
+        for i in self.grade_course_table.get_children():
+            self.grade_course_table.delete(i)
         for row in rows:
-            self.student_table.insert('', 'end', values=row)
+            self.grade_course_table.insert('', 'end', values=row)
 
     def update_gcourse(self):
         self.controller.update_gcourse(self.name_var.get(), self.id_var.get())
@@ -112,8 +113,8 @@ class GCoursePage(tk.Frame):
 
     def get_cursor(self, ev):
         try:
-            cursor_row=self.student_table.focus()
-            content=self.student_table.item(cursor_row)
+            cursor_row=self.grade_course_table.focus()
+            content=self.grade_course_table.item(cursor_row)
             row=content['values']
 
             self.id_var.set(row[0])
@@ -124,8 +125,8 @@ class GCoursePage(tk.Frame):
     def search_gcourse(self):
         convert = {'Nazwa kierunku': 'name'}
         rows = self.controller.search_grade_course_by(convert[self.search_by_var.get()], self.search_txt_var.get())
-        for i in self.student_table.get_children():
-            self.student_table.delete(i)
+        for i in self.grade_course_table.get_children():
+            self.grade_course_table.delete(i)
         for row in rows:
-            self.student_table.insert('', 'end', values=row)
+            self.grade_course_table.insert('', 'end', values=row)
             

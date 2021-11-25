@@ -1,4 +1,4 @@
-from SZS_console import db_connect as db
+from . import db_connect as db
 
 class Student(db.Sqlite):
     __first_name = ""
@@ -85,6 +85,18 @@ class Student(db.Sqlite):
                        WHERE {by} LIKE "%{txt}%"''')
         rows = self.c.fetchall()
         return rows
+
+    def getInfoForPDF(self, student_id):
+        self.c.execute('''SELECT ROUND(AVG(efs.grade),2), course.name, student.id, student.first_name,
+                            student.last_name, student.age, student.phone, student.email, grade_course.name 
+                            FROM exam_for_student as efs 
+                            INNER JOIN exam ON exam.id = efs.exam_id 
+                            INNER JOIN student ON efs.student_id = student.id 
+                            INNER JOIN course ON exam.course_id = course.id 
+                            INNER JOIN grade_course ON grade_course.id = student.grade_course_id 
+                            GROUP BY student.id, course.id 
+                            HAVING student.id = ?''', (student_id, ))
+        return(self.c.fetchall())
         
 
 class GradeCourse(db.Sqlite):
@@ -176,7 +188,7 @@ class Course(db.Sqlite):
 
     def getAllCourse(self):
         self.c.execute('''SELECT course.id, course.name, grade_course.name, grade_course.id
-                    FROM course INNER JOIN grade_course on grade_course.id = course.grade_course_id''')
+                        FROM course INNER JOIN grade_course on grade_course.id = course.grade_course_id''')
         return self.c.fetchall()
 
     def getAllNameGcourse(self):
@@ -185,9 +197,19 @@ class Course(db.Sqlite):
 
     def getBySearch(self, by, txt):
         self.c.execute(f'''SELECT course.id, course.name, grade_course.name, grade_course.id FROM course
-        INNER JOIN grade_course on grade_course.id = course.grade_course_id
-        WHERE {by} LIKE "%{txt}%"''')
+                        INNER JOIN grade_course on grade_course.id = course.grade_course_id
+                        WHERE {by} LIKE "%{txt}%"''')
         return self.c.fetchall()
+
+    def getInfoForChart(self, course_id):
+        self.c.execute('''SELECT ROUND(AVG(efs.grade),2), course.name, student.first_name, student.last_name 
+                        FROM exam_for_student as efs 
+                        INNER JOIN exam ON exam.id = efs.exam_id 
+                        INNER JOIN student ON efs.student_id = student.id 
+                        INNER JOIN course ON exam.course_id = course.id 
+                        GROUP BY student.id, course.id 
+                        HAVING course.id = ?''', (course_id, ))
+        return(self.c.fetchall())
 
 class Exam(db.Sqlite):
     __name = ""
@@ -236,6 +258,13 @@ class Exam(db.Sqlite):
     def getIdAndNameCourse(self):
         self.c.execute('SELECT course.id, course.name, grade_course.name FROM course INNER JOIN grade_course on grade_course.id = course.grade_course_id')
         return self.c.fetchall()
+
+    def getBySearch(self, by, txt):
+        self.c.execute(f'''SELECT exam.id, exam.name, course.name FROM exam
+                       INNER JOIN course on course.id = exam.course_id
+                       WHERE {by} LIKE "%{txt}%"''')
+        rows = self.c.fetchall()
+        return rows
 
 class ExamForStudent(db.Sqlite):
     __student_id = 0

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 class StudentPage(tk.Frame):
+    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
@@ -100,8 +101,11 @@ class StudentPage(tk.Frame):
         search_btn=tk.Button(content_frame, text="Szukaj", width=13, command=self.search_student_by)
         search_btn.grid(row=0, column=4, padx=10, pady=10)
 
-        show_btn=tk.Button(content_frame, text="Pokaż wszystkich", width=13, command=self.show_students_data)
+        show_btn=tk.Button(content_frame, text="Pokaż wszystko", width=13, command=self.show_students_data)
         show_btn.grid(row=0, column=5, padx=10, pady=10)
+
+        create_pdf_btn=tk.Button(content_frame, text="Wydrukuj raport o studencie", width=30, command=self.create_PDF)
+        create_pdf_btn.grid(row=0, column=6, padx=10, pady=10)
 
         table_frame=tk.Frame(content_frame,bd=4,relief=tk.RIDGE,bg='gray')
         table_frame.place(x=10,y=70,width=1000,height=460)
@@ -189,3 +193,6 @@ class StudentPage(tk.Frame):
             self.student_table.delete(i)
         for row in rows:
             self.student_table.insert('', 'end', values=row)
+
+    def create_PDF(self):
+        self.controller.create_PDF(self.id_var.get())
