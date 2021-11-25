@@ -4,6 +4,7 @@ Program obsługujący prosty CRUD do zarządzania studentami w systemie.
 
 Aby włączyć program należy:
 
+* nalezy pamiętać aby dodać pythona do zmiennych środowiskowych
 - zainstalować najnowszą wersję pythona 3
 - zainstalować i skonfigurować GIT
 - otworzyć kosnole GIT bash
